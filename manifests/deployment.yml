@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: dumbkv
-        image: ghcr.io/ladeblayze/srechallenge:V1/srechallenge
+        image: ghcr.io/ladeblayze/srechallenge:feat
         ports:
         - containerPort: 8000
         env:
