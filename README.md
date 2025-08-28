@@ -91,12 +91,12 @@ uv run python -m pytest -v --database-location=postgres://postgres:postgres@127.
 Feel free to check these boxes in your copy along the way. If you want to leave short notes about your changes you can add them to this list also.
 
 ## Build
-- [ ] Finish the dockerfile to run this project
-- [ ] Finish the github action to build the docker image (no need to push anywhere if you don't want to)
+- [x] Finish the dockerfile to run this project
+- [x] Finish the github action to build the docker image (no need to push anywhere if you don't want to)
 
 ## Test
-- [ ] Create a github actions workflow that runs the tests on each pull_request
-- [ ] Create an additional test workflow that runs a postgres service and update the test config to use this postgres backend
+- [x] Create a github actions workflow that runs the tests on each pull_request
+- [x] Create an additional test workflow that runs a postgres service and update the test config to use this postgres backend
 
 ## Create the kubernetes manifests to run this service
 
