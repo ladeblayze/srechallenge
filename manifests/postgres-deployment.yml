@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dumbkv-postgres
+  labels:
+    app: dumbkv-postgres
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: dumbkv-postgres
+  template:
+    metadata:
+      labels:
+        app: dumbkv-postgres
+    spec:
+      containers:
+      - name: dumbkv
+        image: ghcr.io/ladeblayze/srechallenge:feat
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_LOCATION
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: connection-string
+        - name: DATABASE_TYPE
+          value: "postgres"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-secret
+type: Opaque
+data:
+  connection-string: cG9zdGdyZXM6Ly9wb3N0Z3JlczpwYXNzd29yZEBwb3N0Z3Jlcy1zZXJ2aWNlOjU0MzIvZGF0YWJhc2U=  # base64 encoded
