@@ -1,58 +1,58 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dumbkv-postgres
+  name: postgres-db
   labels:
-    app: dumbkv-postgres
+    app: postgres-db
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
-      app: dumbkv-postgres
+      app: postgres-db
   template:
     metadata:
       labels:
-        app: dumbkv-postgres
+        app: postgres-db
     spec:
       containers:
-      - name: dumbkv
-        image: ghcr.io/ladeblayze/srechallenge:feat
+      - name: postgres
+        image: postgres:15
         ports:
-        - containerPort: 8000
+        - containerPort: 5432
         env:
-        - name: DATABASE_LOCATION
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret
-              key: connection-string
-        - name: DATABASE_TYPE
-          value: "postgres"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: POSTGRES_DB
+          value: "database"
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-pvc
+      volumes:
+      - name: postgres-pvc
+        persistentVolumeClaim:
+          claimName: postgres-pvc
 ---
 apiVersion: v1
-kind: Secret
+kind: Service
 metadata:
-  name: postgres-secret
-type: Opaque
-data:
-  connection-string: cG9zdGdyZXM6Ly9wb3N0Z3JlczpwYXNzd29yZEBwb3N0Z3Jlcy1zZXJ2aWNlOjU0MzIvZGF0YWJhc2U=  # base64 encoded
+  name: postgres-service
+spec:
+  selector:
+    app: postgres-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: efs
