@@ -1,0 +1,40 @@
+name: Test with PostgreSQL
+
+on:
+  pull_request:
+    branches: [ main, feat ]
+  push:
+    branches: [ main, feat ]
+
+jobs:
+  test-postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install uv
+      uses: astral-sh/setup-uv@v2
+      
+    - name: Set up Python
+      run: uv python install 3.12
+      
+    - name: Install dependencies
+      run: uv sync
+      
+    - name: Run tests with PostgreSQL
+      run: uv run python -m pytest -v --database-location=postgres://postgres:postgres@127.0.0.1/postgres
