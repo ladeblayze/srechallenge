@@ -5,7 +5,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: efs
+  storageClassName: standard  # Change from 'efs' to 'standard'
   resources:
     requests:
       storage: 5Gi
