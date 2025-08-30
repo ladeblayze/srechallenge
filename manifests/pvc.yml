@@ -5,7 +5,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: standard  # Change from 'efs' to 'standard'
+  storageClassName: standard  # Minikube default
   resources:
     requests:
       storage: 5Gi

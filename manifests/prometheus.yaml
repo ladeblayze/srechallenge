@@ -66,7 +66,7 @@ data:
             action: keep
             regex: default;kubernetes;https
 ---
-# -------------------- Persistent Volume Claim --------------------
+# -------------------- Persistent Volume Claim -------------------
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
